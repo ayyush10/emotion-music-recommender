@@ -1,50 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Emotion-Based Music Recommender</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <main class="homepage">
-      <section class="container">
-        <div class="left">
-          <h1 class="maintext">Emotion-Based Music Recommender</h1>
-          <p class="lead">AI + Music + Emotion Detection</p>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emotion-Based Music Recommender</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="homepage">
+    <section class="container">
+      <div class="left">
+        <h1 class="maintext">Emotion-Based Music Recommender</h1>
+        <p class="lead">AI + Music + Emotion Detection</p>
 
-          <!-- Login Button -->
-          <button onclick="loginWithSpotify()">Login with Spotify</button>
+        <!-- Login Button -->
+        <button id="spotifyLoginBtn">Login with Spotify</button>
 
-          <!-- Get Started -->
-          <a class="primarybtn" href="./facedetection.html">Get started</a>
-        </div>
+        <!-- Get Started (hidden until login) -->
+        <a id="getStartedBtn" class="primarybtn" href="./facedetection.html" style="display:none;">Get started</a>
+      </div>
 
-        <div class="media" aria-hidden="true">
-          <img
-            src="https://www.musicteachermagazine.co.uk/media/1rcpdlrr/adobestock_563055013_shotprime-studio-copy.jpg?rxy=0.42539486070739224,0.4302872047106021&width=1002&height=668&bgcolor=White&v=1db08330c18d570"
-            alt="Person listening to music with headphones"
-          />
-        </div>
-      </section>
-    </main>
+      <div class="media" aria-hidden="true">
+        <img
+          src="https://www.musicteachermagazine.co.uk/media/1rcpdlrr/adobestock_563055013_shotprime-studio-copy.jpg"
+          alt="Person listening to music with headphones"
+        />
+      </div>
+    </section>
+  </main>
 
-    <script>
-      const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // from Spotify dashboard
-      const redirectUri = "https://emotion-music-recommender.vercel.app/callback.html"; // must match Spotify dashboard
+  <script>
+    const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // Spotify Client ID
+    const redirectUri = "https://emotion-music-recommender.vercel.app/callback.html"; // Must match Spotify dashboard
+    const scopes = "user-read-private user-read-email";
 
-      const scopes = "user-read-private user-read-email";
+    const loginBtn = document.getElementById("spotifyLoginBtn");
+    const getStartedBtn = document.getElementById("getStartedBtn");
 
-      function loginWithSpotify() {
-        const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(
-          redirectUri
-        )}&scope=${encodeURIComponent(scopes)}`;
-        window.location.href = authUrl;
-      }
+    // Check if token already exists
+    const token = localStorage.getItem("spotify_token");
+    if (token) {
+      loginBtn.style.display = "none";
+      getStartedBtn.style.display = "inline-block";
+      console.log("Spotify token:", token);
+    }
 
-      // Grab token from localStorage (set in callback.html)
-      window.SPOTIFY_TOKEN = window.localStorage.getItem("spotify_token");
-
-    </script>
-  </body>
+    // Login handler
+    loginBtn.addEventListener("click", () => {
+      const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
+      window.location.href = authUrl;
+    });
+  </script>
+</body>
 </html>

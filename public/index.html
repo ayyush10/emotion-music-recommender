@@ -30,11 +30,9 @@
     </main>
 
     <script>
-      // --- Spotify Auth Config ---
-      const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // your client ID
-      const redirectUri = "https://emotionmusicrecommender-fnqua08mc-ayyush10s-projects.vercel.app/callback.html";
+      const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // from Spotify dashboard
+      const redirectUri = "https://emotion-music-recommender.vercel.app/callback.html"; // must match Spotify dashboard
 
- // your redirect URI
       const scopes = "user-read-private user-read-email";
 
       function loginWithSpotify() {
@@ -44,21 +42,9 @@
         window.location.href = authUrl;
       }
 
-      function getTokenFromUrl() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        return params.get("access_token");
-      }
-
-      // Grab token if available after redirect
-      const token = getTokenFromUrl();
-      if (token) {
-        window.localStorage.setItem("spotify_token", token);
-        window.location.hash = ""; // clean URL
-      }
-
-      // Make token available globally
+      // Grab token from localStorage (set in callback.html)
       window.SPOTIFY_TOKEN = window.localStorage.getItem("spotify_token");
+
     </script>
   </body>
 </html>

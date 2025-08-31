@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html>
-<head><title>Spotify Callback</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spotify Auth Callback</title>
+</head>
 <body>
   <script>
-    // Get access token from URL fragment
+    // Extract token from URL hash
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    const accessToken = params.get("access_token");
+    const token = params.get("access_token");
 
-    if (accessToken) {
-      localStorage.setItem("spotify_access_token", accessToken);
-      // Redirect to home page
+    if (token) {
+      window.localStorage.setItem("spotify_token", token);
+      // Redirect back to homepage
       window.location.href = "/";
     } else {
-      document.body.innerText = "No token received!";
+      document.body.innerHTML = "<h2>Login failed. No token found.</h2>";
     }
   </script>
 </body>

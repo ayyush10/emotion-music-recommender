@@ -69,12 +69,33 @@ body{
   object-fit: cover;
 }
 
-
 .primarybtn{
-  display:inline-flex; align-items:center; justify-content:center; gap:10px;
-  padding:14px 22px; border-radius:999px; border:1px solid rgba(59,130,246,.3);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  /* tighter padding so it feels shorter */
+  padding:12px 18px;
+
+  /* make width content-based and prevent flex parents from stretching it */
+  width:fit-content;
+  inline-size:fit-content;
+  flex:none;
+
+  /* avoid multi-line growth that can make it look long */
+  white-space:nowrap;
+
+  /* center it if the parent is full-width */
+  margin-inline:auto;
+
+  border-radius:999px;
+  border:1px solid rgba(59,130,246,.3);
   background:linear-gradient(180deg, var(--accent), color-mix(in oklab, var(--accent) 84%, black));
-  color:var(--neutral-0); font-weight:600; cursor:pointer; text-decoration:none;
+  color:var(--neutral-0);
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
   transition:transform 120ms ease, box-shadow 200ms ease, background 200ms ease;
   box-shadow:0 6px 16px rgba(59,130,246,.28), inset 0 1px 0 rgba(255,255,255,.25);
 }

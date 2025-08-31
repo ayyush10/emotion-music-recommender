@@ -13,11 +13,13 @@
         <h1 class="maintext">Emotion-Based Music Recommender</h1>
         <p class="lead">AI + Music + Emotion Detection</p>
 
-        <!-- Login Button -->
-        <button id="spotifyLoginBtn">Login with Spotify</button>
+         Login Button 
+        <button id="spotifyLoginBtn" class="primarybtn">Login with Spotify</button>
 
-        <!-- Get Started (hidden until login) -->
+         Get Started (hidden until login) 
         <a id="getStartedBtn" class="primarybtn" href="./facedetection.html" style="display:none;">Get started</a>
+
+        <p id="authStatus" class="lead" style="margin-top:8px;"></p>
       </div>
 
       <div class="media" aria-hidden="true">
@@ -29,27 +31,35 @@
     </section>
   </main>
 
+  <script src="./js/spotify-auth.js"></script>
   <script>
-    const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // Spotify Client ID
-    const redirectUri = "https://emotion-music-recommender.vercel.app/callback.html"; // Must match Spotify dashboard
-    const scopes = "user-read-private user-read-email";
-
+    // Initialize based on token presence/validity
     const loginBtn = document.getElementById("spotifyLoginBtn");
     const getStartedBtn = document.getElementById("getStartedBtn");
+    const authStatus = document.getElementById("authStatus");
 
-    // Check if token already exists
-    const token = localStorage.getItem("spotify_token");
-    if (token) {
-      loginBtn.style.display = "none";
-      getStartedBtn.style.display = "inline-block";
-      console.log("Spotify token:", token);
-    }
+    function renderAuthState() {
+  const tokenData = SpotifyAuth.loadToken();
+  if (tokenData && SpotifyAuth.isTokenValid(tokenData)) {
+    loginBtn.style.display = "none";
+    getStartedBtn.style.display = "inline-block";
+    authStatus.textContent = "✅ Spotify connected. You can Get started.";
+  } else {
+    loginBtn.style.display = "inline-block";
+    getStartedBtn.style.display = "none";
+    authStatus.textContent = "❌ Please login with Spotify first.";
+  }
+}
+
+
+    renderAuthState();
 
     // Login handler
-    loginBtn.addEventListener("click", () => {
-      const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
-      window.location.href = authUrl;
-    });
+    loginBtn.addEventListener("click", async () => {
+  const url = await SpotifyAuth.buildAuthorizeUrl();
+  window.location.href = url;
+});
+;
   </script>
 </body>
 </html>

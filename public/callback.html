@@ -6,14 +6,28 @@
 </head>
 <body>
   <p>Completing Spotify login…</p>
-  script src="./js/spotify-auth.js"></script>t>
+  <script src="./js/spotify-auth.js"></script>
   <script>
     const CLIENT_ID = "2cb3f9d1752d46e8b7e5d397c2ab66b4";
-    const isLocal = ["127.0.0.1", "localhost"].includes(window.location.hostname)
-const redirectUri = isLocal
-? "[http://127.0.0.1:5500/public/callback.html](http://127.0.0.1:5500/public/callback.html)"
-: "[https://emotionmusicrecommender-fnqua08mc-ayuysh10s-projects.vercel.app/callback.html](https://emotionmusicrecommender-fnqua08mc-ayuysh10s-projects.vercel.app/callback.html)";
-    console.log("🔍 Redirect URI:", redirectUri);
+    const redirectUri = SpotifyAuth.getRedirectUri();
+    console.log("[v0] Redirect URI used in token exchange:", redirectUri);
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const returnedState = params.get("state");
+    const expectedState = sessionStorage.getItem(SpotifyAuth.STATE_KEY);
+
+    if (!code) {
+      console.error("❌ No code in callback URL");
+      alert("Missing authorization code. Please log in again.");
+      window.location.href = "./index.html";
+    }
+
+    if (!returnedState || !expectedState || returnedState !== expectedState) {
+      console.error("❌ State mismatch or missing. returned:", returnedState, "expected:", expectedState);
+      alert("Login session mismatch. Please log in again.");
+      window.location.href = "./index.html";
+    }
 
     async function exchangeCodeForToken(code) {
       const codeVerifier = sessionStorage.getItem("spotify_code_verifier");
@@ -39,40 +53,40 @@ const redirectUri = isLocal
           body
         });
 
-        const data = await response.json();
-        console.log("🔑 Token response:", data);
+        const text = await response.text();
+        let data;
+        try { data = JSON.parse(text); } catch { data = { raw: text }; }
 
-        if (data.access_token) {
-          // ✅ Use the helper from spotify-auth.js
+        console.log("[v0] Token response status:", response.status);
+        console.log("[v0] Token response body:", data);
+
+        if (response.ok && data && data.access_token) {
           SpotifyAuth.saveToken({
             access_token: data.access_token,
             refresh_token: data.refresh_token,
             expires_in: data.expires_in,
             token_type: data.token_type
           });
+          // Optional: clear one-time values
+          sessionStorage.removeItem(SpotifyAuth.STATE_KEY);
+          sessionStorage.removeItem("spotify_code_verifier");
 
-          console.log("✅ Token stored:", SpotifyAuth.loadToken());
           window.location.href = "./facedetection.html";
         } else {
+          const msg = (data && (data.error_description || data.error)) || "Unknown error";
+          alert("Failed to obtain Spotify token: " + msg + ". Please try logging in again.");
           console.error("❌ Failed to obtain token:", data);
-          alert("Failed to obtain Spotify token. Please try logging in again.");
           window.location.href = "./index.html";
         }
       } catch (err) {
         console.error("❌ Error exchanging code for token:", err);
-        alert("Error during login. Please try again.");
+        alert("Network error during login. Please try again.");
         window.location.href = "./index.html";
       }
     }
 
-    // ✅ Run after defining function
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    if (code) {
+    if (code && returnedState && expectedState && returnedState === expectedState) {
       exchangeCodeForToken(code);
-    } else {
-      console.error("❌ No code in callback URL");
-      window.location.href = "./index.html";
     }
   </script>
 </body>

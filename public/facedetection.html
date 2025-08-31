@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detect Emotion • Recommendations</title>
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      :root {
+        --stack-gap: clamp(16px, 3vw, 32px);
+      }
+
+      /* keep grid items from stretching and add vertical spacing between cards */
+      .container { align-items: start; }
+      .container--camera { height: clamp(520px, 70vh, 680px); margin-bottom: var(--stack-gap); }
+      .container + .container { margin-top: var(--stack-gap); }
+
+      /* Card styling */
+      .card {
+        background: #fff;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        display: flex;
+        gap: 24px;
+        align-items: flex-start; /* children keep natural height */
+      }
+
+      .card--recs { display: block; }
+
+      .left { flex: 1; overflow: auto; }
+
+      /* center camera inside its column and keep video aspect without stretch */
+      .canvas-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 640px;
+        display: flex;                 /* center the video box */
+        justify-content: center;
+        align-items: center;
+        flex: 1.2;                     /* give the camera a bit more width than text */
+        min-height: clamp(240px, 40vh, 480px);
+      }
+      .canvas-wrap video {
+        display: block;
+        width: 100%;
+        height: auto;                  /* no vertical stretching */
+        aspect-ratio: 4 / 3;           /* stable shape */
+        object-fit: cover;
+        border: 0;
+        border-radius: 12px;
+      }
+      .canvas-wrap canvas {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        height: 100% !important;
+        pointer-events: none;
+      }
+
+      /* Responsive: stack columns on small screens */
+      @media (max-width: 768px) {
+        .card {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .canvas-wrap { max-width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="homepage">
+      <section class="container container--camera">
+        <div class="left">
+          <h1 class="maintext">Detect or choose an emotion</h1>
+          <p class="lead">Start camera, we’ll read your expression, or pick one below.</p>
+
+          <div style="display:grid; gap:12px; margin-top:8px;">
+            <input id="expressionBox" placeholder="Detected emotion appears here…" aria-label="Detected emotion" />
+            <div id="emotions" aria-label="Emotion shortcuts">
+              <button id="happy" class="emotion-button" type="button">Happy</button>
+              <button id="sad" class="emotion-button" type="button">Sad</button>
+              <button id="angry" class="emotion-button" type="button">Angry</button>
+              <button id="neutral" class="emotion-button" type="button">Neutral</button>
+              <button id="surprise" class="emotion-button" type="button">Surprised</button>
+              <button id="fearful" class="emotion-button" type="button">Fearful</button>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <button id="toggleButton" class="primarybtn" type="button">Start Camera</button>
+              <button id="search" class="primarybtn" type="button">Find Songs</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="canvasWrap" class="media canvas-wrap">
+          <video id="video" width="640" height="480" autoplay muted playsinline></video>
+        </div>
+      </section>
+
+      <section class="container card card--recs" style="display:block; padding:24px;">
+        <div id="status" class="status" aria-live="polite" style="margin-bottom:12px;"></div>
+        <section id="recommendations" class="recommendations-container" aria-live="polite"></section>
+      </section>
+    </main>
+
+    <script src="./face-api.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

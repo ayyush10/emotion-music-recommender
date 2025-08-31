@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Emotion-Based Music Recommender</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="homepage">
+      <section class="container">
+        <div class="left">
+          <h1 class="maintext">Emotion-Based Music Recommender</h1>
+          <p class="lead">AI + Music + Emotion Detection</p>
+
+          <!-- Login Button -->
+          <button onclick="loginWithSpotify()">Login with Spotify</button>
+
+          <!-- Get Started -->
+          <a class="primarybtn" href="./facedetection.html">Get started</a>
+        </div>
+
+        <div class="media" aria-hidden="true">
+          <img
+            src="https://www.musicteachermagazine.co.uk/media/1rcpdlrr/adobestock_563055013_shotprime-studio-copy.jpg?rxy=0.42539486070739224,0.4302872047106021&width=1002&height=668&bgcolor=White&v=1db08330c18d570"
+            alt="Person listening to music with headphones"
+          />
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // --- Spotify Auth Config ---
+      const clientId = "2cb3f9d1752d46e8b7e5d397c2ab66b4"; // your client ID
+      const redirectUri = "https://emotionmusicrecommender-fnqua08mc-ayyush10s-projects.vercel.app/callback.html";
+
+ // your redirect URI
+      const scopes = "user-read-private user-read-email";
+
+      function loginWithSpotify() {
+        const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(
+          redirectUri
+        )}&scope=${encodeURIComponent(scopes)}`;
+        window.location.href = authUrl;
+      }
+
+      function getTokenFromUrl() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        return params.get("access_token");
+      }
+
+      // Grab token if available after redirect
+      const token = getTokenFromUrl();
+      if (token) {
+        window.localStorage.setItem("spotify_token", token);
+        window.location.hash = ""; // clean URL
+      }
+
+      // Make token available globally
+      window.SPOTIFY_TOKEN = window.localStorage.getItem("spotify_token");
+    </script>
+  </body>
+</html>

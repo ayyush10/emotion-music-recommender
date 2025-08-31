@@ -30,7 +30,8 @@ const SpotifyAuth = (() => {
   }
 
   async function buildAuthorizeUrl() {
-    const redirectUri = getRedirectUri()
+    const redirectUri = `${location.origin}/callback.html`;
+    console.log("[v0] redirect_uri:", redirectUri);
     const state = generateState(20)
     sessionStorage.setItem(STATE_KEY, state)
 

@@ -1,7 +1,3 @@
-Here’s a combined and polished `README.md` for your project, merging both the Emotion-Based Music Recommendation Application and the Spotify PKCE authorization flow documentation:
-
----
-
 # Emotion-Based Music Recommendation Application
 
 A web application that detects user emotions via facial recognition and recommends music from Spotify based on the detected mood. It integrates **Face API** for emotion detection and **Spotify API** with a secure PKCE flow for music recommendations.
@@ -146,3 +142,4 @@ localStorage.removeItem("spotify_pkce_verifier");
 * **Open Source Libraries:** Various JS libraries used for development
 
 ---
+

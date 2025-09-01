@@ -1,108 +1,148 @@
-# Spotify Auth (Authorization Code with PKCE) — Vanilla JS
+Here’s a combined and polished `README.md` for your project, merging both the Emotion-Based Music Recommendation Application and the Spotify PKCE authorization flow documentation:
 
-A minimal front-end implementation of Spotify’s Authorization Code with PKCE flow.  
-Users click “Login with Spotify”, authenticate at accounts.spotify.com, and are redirected back to `callback.html` where the authorization code is exchanged for access/refresh tokens.
+---
+
+# Emotion-Based Music Recommendation Application
+
+A web application that detects user emotions via facial recognition and recommends music from Spotify based on the detected mood. It integrates **Face API** for emotion detection and **Spotify API** with a secure PKCE flow for music recommendations.
+
+---
 
 ## Features
-- Authorization Code with PKCE (no client secret on the frontend)
-- Secure state + code_verifier handling
-- Works on a static file server (e.g., VS Code Live Server)
-- Clear troubleshooting for common 400 (Bad Request) errors
 
-## How it works
-1. On the index page, clicking “Login to Spotify”:
-   - Generates a `code_verifier`, derives a `code_challenge` (S256), creates a random `state`.
-   - Redirects the browser to `https://accounts.spotify.com/authorize?...` with PKCE params.
-2. Spotify redirects back to `callback.html?code=...&state=...`.
-3. On `callback.html`, the app:
-   - Verifies `state`.
-   - POSTs to `https://accounts.spotify.com/api/token` with `code`, `code_verifier`, `client_id`, and the same `redirect_uri`.
-   - Stores tokens and continues the app flow.
+* **Real-time Facial Expression Recognition:** Uses the webcam to capture user expressions.
+* **Emotion Detection:** Identifies emotions such as happy, sad, angry, etc.
+* **Music Recommendations:** Suggests songs based on detected emotions.
+* **Spotify Integration:** Uses Spotify API to fetch and play songs securely with PKCE.
+* **Authorization Code with PKCE:** Frontend-only secure authentication flow without exposing client secrets.
 
-No client secret is used on the frontend; PKCE keeps the flow secure for public clients.
+---
+
+## Technologies Used
+
+* **HTML & CSS:** Structure and styling
+* **JavaScript:** Frontend functionality and logic
+* **Face API:** Facial expression detection
+* **Spotify API:** Music recommendations and playback
+* **Web Crypto API:** Secure PKCE code challenge generation
+
+---
 
 ## Prerequisites
-- A Spotify Developer account: https://developer.spotify.com
-- A Spotify app (Client ID available from the dashboard)
-- A local static server (e.g., VS Code “Live Server” on http://127.0.0.1:5500)
 
-## Project structure (typical)
-Adjust if your paths differ:
-\`\`\`
-/ (project root)
-├─ index.html                # Start page with "Login to Spotify" button
-├─ callback.html             # Handles code->token exchange
-├─ /js
-│  ├─ spotify-auth.js        # PKCE helpers + authorize URL builder
-│  └─ script.js              # Page behavior (e.g., login button handler)
-└─ vendor.js (optional)      # Your bundler/output file if applicable
-\`\`\`
+* Basic knowledge of HTML, CSS, and JavaScript
+* **Spotify Developer account** for API access
+* **Face API** setup for emotion detection
+* Local static server (e.g., VS Code Live Server)
 
-## Configuration
-1) Set your Client ID in the auth code (usually in `js/spotify-auth.js`):
-\`\`\`js
+---
+
+## Installation & Setup
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/charanteja-7/emotion-based-music-recommendation-system.git
+```
+
+2. **Set Up API Keys:**
+
+* **Face API:** Follow [Face API documentation](https://justadudewhohacks.github.io/face-api.js/docs/index.html)
+* **Spotify API:** Follow [Spotify Developer documentation](https://developer.spotify.com/documentation/web-api/) to create an app and get your **Client ID**
+
+3. **Configure Spotify PKCE:**
+
+   * Set your Client ID in `js/spotify-auth.js`:
+
+```js
 const CLIENT_ID = "YOUR_SPOTIFY_CLIENT_ID";
-\`\`\`
+```
 
-2) Register your Redirect URI(s) in your Spotify app settings (exact match required):
-- If you run from the root with Live Server:
-  - http://127.0.0.1:5500/callback.html
-- If your files are served from a subfolder (example):
-  - http://127.0.0.1:5500/your-folder/callback.html
+* Register your Redirect URI(s) in your Spotify app dashboard (exact match required, e.g., `http://127.0.0.1:5500/callback.html`)
+* Set required scopes in `js/spotify-auth.js`:
 
-Important:
-- The Redirect URI in your code AND in Spotify’s dashboard must match exactly (scheme, host, port, and path).
-- “localhost” and “127.0.0.1” are different. If you use 127.0.0.1 in code, add that exact URI in the dashboard (and optionally also add localhost).
+```js
+const scopes = "user-read-private user-read-email";
+```
 
-3) Scopes
-Update the scopes string where the authorize URL is built:
-\`\`\`js
-const scopes = "user-read-private user-read-email"; // space-separated
-\`\`\`
+---
 
-## Running locally
-- Serve the project from a static server (do not open files via file://).
-- Example (VS Code Live Server):
-  - Open the project folder
-  - Right-click index.html → “Open with Live Server”
-  - You should see http://127.0.0.1:5500 or similar
-- Click “Login to Spotify” and complete the flow.
+## Project Structure
+
+```
+/public
+├─ index.html
+├─ facedetection.html
+├─ callback.html
+├─ style.css
+├─ script.js
+├─ /js
+│  └─ spotify-auth.js
+├─ /models
+│  ├─ face-api.js
+│  ├─ face-api.min.js
+│  └─ face-api.js.map
+.gitignore
+README.md
+vercel.json
+odels                 # Face API models
+```
+
+---
+
+## Usage
+
+1. **Start the Application:**
+   Serve the project using a local static server (e.g., VS Code Live Server) and open `index.html`.
+
+2. **Login to Spotify:**
+   Click the **Login to Spotify** button to authenticate via PKCE.
+
+3. **Interact with the App:**
+
+   * Allow camera access
+   * Facial expressions are detected in real-time
+   * Music is recommended and played based on your current emotion
+
+---
 
 ## Troubleshooting
 
-400 (Bad Request) on /authorize
-- Most common cause: redirect_uri mismatch.
-  - Ensure the exact URI is added in Spotify app settings (including path).
-  - Ensure code uses the exact same URI (e.g., `http://127.0.0.1:5500/callback.html`).
-  - Avoid double-encoding the redirect URI; use URLSearchParams to construct query strings.
-- Make sure you are redirecting the browser to the authorize URL (window.location.assign) — do not use fetch().
+**Spotify Authorization Errors:**
 
-404 on callback.html
-- Your redirect_uri points to a path the server isn’t serving.
-- Open the callback URL directly in the browser. If it 404s, fix either:
-  - The file location on disk, or
-  - The redirect_uri to point to the actual path (then register it on Spotify).
+* **400 Bad Request:** Usually a redirect URI mismatch
 
-State or PKCE errors (retrying helps)
-- Clear storage and retry:
-\`\`\`js
+  * Ensure exact match between code and Spotify dashboard
+  * Avoid double encoding the redirect URI
+* **404 callback.html:** Check the path of your redirect URI matches the actual file location
+* **PKCE / state errors:** Clear session/local storage and retry:
+
+```js
 sessionStorage.removeItem("spotify_auth_state");
 sessionStorage.removeItem("spotify_code_verifier");
-// If your code used localStorage for the verifier:
 localStorage.removeItem("spotify_pkce_verifier");
-// Or wipe all session keys for this origin:
-sessionStorage.clear();
-\`\`\`
+```
 
-General PKCE tips
-- code_verifier: 43–128 chars using only unreserved characters [A–Z a–z 0–9 - . _ ~]
-- code_challenge: base64url(SHA-256(code_verifier)), no padding, use S256
-- Use Web Crypto (`crypto.subtle.digest`) and `crypto.getRandomValues` for secure randomness
+**Face API Issues:**
 
-## Production notes
-- Add your production Redirect URI(s) in the Spotify dashboard (e.g., https://yourdomain.com/callback.html).
-- Never ship a client secret in frontend code. Use PKCE for public clients.
-- Consider a small backend if you need to securely manage refresh tokens or call Spotify on behalf of the user server-side.
+* Verify that model files are correctly placed in `/models`
+* Ensure camera permissions are granted
 
-## License
-MIT
+---
+
+## Production Notes
+
+* Add production Redirect URI(s) in Spotify dashboard
+* Do **not** include client secrets in frontend code
+* PKCE ensures secure token exchange for public clients
+* Consider a backend if refresh tokens need secure handling
+
+---
+
+## Acknowledgements
+
+* **Face API:** Facial expression detection
+* **Spotify API:** Music recommendations
+* **Open Source Libraries:** Various JS libraries used for development
+
+---
